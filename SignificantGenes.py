@@ -1,21 +1,50 @@
 import concurrent.futures
-from TopologicalPerturbations import PSL_TopPerturbation
+from SheafLaplacianSignificance import SheafTopologySignificance, LogFC_SheafSignificance
 import scanpy as sc
 import numpy as np
 import pandas as pd
+from tqdm import tqdm
 
-def TopologicalSignificances(args):
+def SheafTopologicalSignificances(args):
     # args = (network, gene, radii)
-    psltp = PSL_TopPerturbation(args[0], args[1], args[2])
-    significances = psltp.topological_significance()
+    sts = SheafTopologySignificance(args[0], args[1], args[2])
+    significances = sts.topological_significance()
     return significances
 
-def TopologicalSignificancesParallelComputation(args):
+def SheafTopologicalSignificancesParallelComputation(args):
     # args = (network, gene, radii)
     with concurrent.futures.ProcessPoolExecutor() as executor:
-        topological_significances = list(executor.map(TopologicalSignificances, args))
+        topological_significances = list(
+            tqdm(
+                executor.map(SheafTopologicalSignificances, args),
+                total=len(args),
+                desc="Gene Specific Sheaf Laplacian Spectrum Analysis",
+                unit="Gene Specific Perturbations"
+                )
+            )
     return topological_significances
 
+##########
+
+def LogFC_SheafTopologicalSignificances(args):
+    # args = (network, gene, radii)
+    sts = LogFC_SheafSignificance(args[0], args[1], args[2])
+    significances = sts.topological_significance()
+    return significances
+
+def LogFC_SheafTopologicalSignificancesParallelComputation(args):
+    # args = (network, gene, radii)
+    with concurrent.futures.ProcessPoolExecutor() as executor:
+        topological_significances = list(
+            tqdm(
+                executor.map(LogFC_SheafTopologicalSignificances, args),
+                total=len(args),
+                desc="Log FC Sheaf Laplacian Spectrum Analysis",
+                unit="Gene Specific Perturbations"
+                )
+            )
+    return topological_significances
+    
 def intersect_top_genes(scores, gene_names, top_n):
     """
     Finds genes that are within the top 'top_n' scores across all scales.
