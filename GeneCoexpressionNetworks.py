@@ -291,7 +291,3 @@ def plot_topological_scores(scores2, gene_names):
 
     plt.tight_layout()
     plt.show()
-        index_to_gene = {v: k for k, v in node_mapping.items()}
-        G = nx.relabel_nodes(G, index_to_gene)
-        return gene_names, G
-
