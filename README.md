@@ -6,7 +6,9 @@ For each gene we may assign a gene labeling either to emphasize it in the networ
 
 From the set of inferred biomarkers we can cross reference these with pathway enrichment libraries or the scientific literature, as well as binding affinity data repositories such as ChEMBL, to perform a computational drug repurposing of DrugBank small compounds for targeting different targets in AD. Among these repurposed drugs we also do a toxicity analysis using ADMET Lab3.0. 
 
-The base of the code for calculating the Persistent Sheaf Laplacians was obtained from the following repository: ... 
+The base of the code for calculating the Persistent Sheaf Laplacians was obtained from the following repository: https://github.com/weixiaoqimath/persistent_sheaf_Laplacians/blob/main/PSL.py
+
+The only adjustments made to the code for the purpose of this study was to enable the PSL function to handle a network input and construct clique complexes from this rather than constructing a simplicial complex from a point cloud input. We also removed the L2 Laplacian computation for convenience. 
 
 # Files 
 In this repository are several files needed for reproducing the results in our study. ... 
