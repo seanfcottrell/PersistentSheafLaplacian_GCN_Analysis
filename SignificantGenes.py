@@ -1,31 +1,11 @@
 import concurrent.futures
-from SheafLaplacianSignificance import SheafTopologySignificance, LogFC_SheafSignificance
+from SheafLaplacianSignificance import LogFC_SheafSignificance
 import scanpy as sc
 import numpy as np
 import pandas as pd
 from tqdm import tqdm
 
-def SheafTopologicalSignificances(args):
-    # args = (network, gene, radii)
-    sts = SheafTopologySignificance(args[0], args[1], args[2])
-    significances = sts.topological_significance()
-    return significances
-
-def SheafTopologicalSignificancesParallelComputation(args):
-    # args = (network, gene, radii)
-    with concurrent.futures.ProcessPoolExecutor() as executor:
-        topological_significances = list(
-            tqdm(
-                executor.map(SheafTopologicalSignificances, args),
-                total=len(args),
-                desc="Gene Specific Sheaf Laplacian Spectrum Analysis",
-                unit="Gene Specific Perturbations"
-                )
-            )
-    return topological_significances
-
 ##########
-
 def LogFC_SheafTopologicalSignificances(args):
     # args = (network, gene, radii)
     sts = LogFC_SheafSignificance(args[0], args[1], args[2])
@@ -44,10 +24,9 @@ def LogFC_SheafTopologicalSignificancesParallelComputation(args):
                 )
             )
     return topological_significances
-    
 def intersect_top_genes(scores, gene_names, top_n):
     """
-    Finds genes that are within the top 'top_n' scores across all scales.
+    Finds genes that are within the top 'top_n' scores across all filtration scales.
 
     Parameters:
     - scores: numpy array of shape (num_genes, num_scales), scores of genes across scales.
@@ -79,3 +58,4 @@ def intersect_top_genes(scores, gene_names, top_n):
     top_genes = [gene_names[idx] for idx in top_genes_indices]
 
     return top_genes
+
