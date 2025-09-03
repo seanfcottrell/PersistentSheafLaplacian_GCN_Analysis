@@ -18,8 +18,8 @@ def coboundary_nonconstant_0(vertices, edges, charges, F):
     d_0 = np.zeros((len(edges), len(vertices)))
     for edge, idx_and_t in edges.items():
         # v_0 \leq [v_0, v_1], q_1/F([v_0, v_1])
-        d_0[idx_and_t[0], edge[0]] = -charges[edge[1]]/F[edge]
-        d_0[idx_and_t[0], edge[1]] = -charges[edge[0]]/F[edge]
+        d_0[idx_and_t[0], edge[0]] = -charges[edge[1]] * F[edge]
+        d_0[idx_and_t[0], edge[1]] = charges[edge[0]] * F[edge]
     return d_0
 
 def coboundary_nonconstant_1(edges, faces, charges, F):
@@ -43,9 +43,9 @@ def coboundary_nonconstant_1(edges, faces, charges, F):
 class PSL():
     def __init__(self, adj, charges = None, radii = None, p = 0):
         """
-        adj: graph structure indicating connections in gene co-expression network
-        charges: a 1d np array of cell/gene specific labels (-1,1) to emphasize each gene locally for topological perturbations  
-        radii: filtration radii for inverse rips filtration 
+        adj: graph structure indicating connections in gene ppi network
+        charges: a 1d np array of gene specific labels (-1,1) to emphasize each gene's dysregulation for PPI topological perturbations  
+        radii: filtration radii for inverse rips filtration (in STRING larger weight -> stronger relation)
         """
         self.p = p
         self.simplex_tree = None
@@ -75,13 +75,13 @@ class PSL():
                 self.F[tuple(simplex)] = 1
             elif len(simplex) == 2:
                 u, v = simplex
-                self.F[tuple(simplex)] = self.adj[u][v]['weight'] if self.adj.has_edge(u, v) else float('inf')
+                self.F[tuple(simplex)] = self.adj[u][v]['weight'] if self.adj.has_edge(u, v) else 1e-7
             elif len(simplex) == 3:
                 u, v, w = simplex
                 if self.adj.has_edge(u, v) and self.adj.has_edge(u, w) and self.adj.has_edge(v, w):
                     self.F[tuple(simplex)] = (
                     self.adj[u][v]['weight'] * self.adj[u][w]['weight'] * self.adj[v][w]['weight']
-                    )
+                    )**(1/3)
                 else:
                     self.F[tuple(simplex)] = float('inf') 
     
